@@ -169,6 +169,6 @@ def evaluate_model(checkpoint_filename="latest_checkpoint.pth.tar"):
     print("--- Evaluation Finished ---")
 
 if __name__ == "__main__":
-    default_ckpt = os.path.join(config.CHECKPOINT_DIR if hasattr(config, 'CHECKPOINT_DIR') else 'training_checkpoints', "latest_checkpoint.pth.tar")
+    default_ckpt = os.path.join(config.CHECKPOINT_DIR if hasattr(config, 'CHECKPOINT_DIR') else 'training_checkpoints', "checkpoint_epoch_20.pth.tar")
     if not os.path.exists(default_ckpt): print(f"Default checkpoint '{default_ckpt}' not found.")
-    else: evaluate_model(checkpoint_filename="latest_checkpoint.pth.tar")
+    else: evaluate_model(checkpoint_filename="checkpoint_epoch_20.pth.tar")

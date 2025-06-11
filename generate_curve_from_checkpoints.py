@@ -1,4 +1,4 @@
-# generate_curve_from_checkpoints.py (Validation Loss Only Version)
+# generate_curve_from_checkpoints.py (Corrected for tuple output)
 
 import torch
 from torch.utils.data import DataLoader
@@ -15,7 +15,6 @@ try:
     from kitti_completion_dataset import KittiCompletionDataset
 except ImportError as e:
     print(f"CRITICAL Error importing necessary modules: {e}")
-    print("Please ensure all project python files are in the Python path.")
     exit()
 
 def kitti_eval_collate_fn(batch_list):
@@ -40,12 +39,10 @@ def get_validation_loss_for_checkpoint(checkpoint_path, val_dataloader, device):
     """
     print(f"\nEvaluating checkpoint: {os.path.basename(checkpoint_path)}")
 
-    # 1. Instantiate fresh models for this evaluation
     context_encoder = ContextEncoder().to(device)
-    denoising_net = DenoisingNetwork().to(device)
+    denoising_net = DenoisingNetwork().to(device) # This is your new model with 2 outputs
     scheduler = DiffusionScheduler(device=device)
 
-    # 2. Load the state dicts from the checkpoint
     try:
         checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
         context_encoder.load_state_dict(checkpoint['context_encoder_state_dict'])
@@ -60,6 +57,7 @@ def get_validation_loss_for_checkpoint(checkpoint_path, val_dataloader, device):
     running_val_loss = 0.0
     num_batches = 0
 
+    # This helper function is where the fix is applied
     def calculate_loss(batch_data):
         batch_size = len(batch_data['visible_points'])
         if batch_size == 0: return torch.tensor(0.0)
@@ -78,9 +76,17 @@ def get_validation_loss_for_checkpoint(checkpoint_path, val_dataloader, device):
             t_indices = torch.randint(0, scheduler.num_timesteps, (occ_gt_pts.shape[0],), device=device)
             t_norm = t_indices.float().mean() / scheduler.num_timesteps
             noisy_occ, noise_gt = scheduler.add_noise(occ_gt_pts, t_indices)
-            pred_noise = denoising_net(noisy_occ, t_norm, ctx_feat, occ_gt_lbl, occ_gt_pd)
-            if pred_noise.shape[0] > 0:
-                total_loss += torch.nn.functional.mse_loss(pred_noise, noise_gt); valid_samples += 1
+            
+            # --- THE FIX IS HERE ---
+            # Unpack the tuple returned by the new DenoisingNetwork
+            # We only need the predicted_noise for this loss calculation.
+            predicted_noise, _ = denoising_net(noisy_occ, t_norm, ctx_feat, occ_gt_lbl, occ_gt_pd)
+            # --- END FIX ---
+            
+            if predicted_noise.shape[0] > 0:
+                # The validation loss here is just the noise loss, which is what we tracked during training
+                total_loss += torch.nn.functional.mse_loss(predicted_noise, noise_gt)
+                valid_samples += 1
 
         return total_loss / valid_samples if valid_samples > 0 else torch.tensor(0.0)
 
@@ -93,7 +99,6 @@ def get_validation_loss_for_checkpoint(checkpoint_path, val_dataloader, device):
     avg_val_loss = running_val_loss / num_batches if num_batches > 0 else 0
     print(f"  - Calculated Average Validation Loss: {avg_val_loss:.4f}")
     return avg_val_loss
-
 
 def main():
     print("--- Generating Validation Loss Curve from Checkpoints ---")
@@ -124,10 +129,8 @@ def main():
     except FileNotFoundError as e:
         print(f"Error: {e}. Please ensure preprocess_dataset.py has run for validation split.")
         return
-
     if len(val_dataset) == 0:
-        print("Validation dataset is empty. Cannot generate curve.")
-        return
+        print("Validation dataset is empty. Cannot generate curve."); return
 
     val_dataloader = DataLoader(val_dataset, batch_size=config.DATALOADER_BATCH_SIZE, shuffle=False,
                                 num_workers=config.NUM_WORKERS_DATALOADER, collate_fn=kitti_eval_collate_fn)
@@ -140,27 +143,20 @@ def main():
         if val_loss is not None:
             recalculated_val_losses.append(val_loss)
             processed_epochs.append(epoch)
-    
-    # --- PLOTTING LOGIC (VALIDATION ONLY) ---
+
     if recalculated_val_losses:
         print("\nPlotting final validation loss curve...")
         plt.figure(figsize=(12, 7))
+        plt.plot(processed_epochs, recalculated_val_losses, label='Average Validation Loss (Recalculated)', marker='x', linestyle='--', color='orange')
         
-        # Plot the recalculated, accurate validation loss curve
-        plt.plot(processed_epochs, recalculated_val_losses, label='Average Validation Loss', marker='x', linestyle='--', color='orange')
-        
-        # Highlight the best validation loss
         best_val_loss = min(recalculated_val_losses)
         best_epoch = processed_epochs[recalculated_val_losses.index(best_val_loss)]
         plt.axvline(x=best_epoch, color='r', linestyle=':', linewidth=1.5, label=f'Best Val Loss at Epoch {best_epoch} ({best_val_loss:.4f})')
         plt.scatter(best_epoch, best_val_loss, s=120, facecolors='none', edgecolors='r', linewidth=2.0, zorder=5)
 
         plt.title("Model Performance on Validation Set Over Epochs")
-        plt.xlabel("Global Epoch")
-        plt.ylabel("Average MSE Loss")
-        plt.legend()
-        plt.grid(True)
-        plt.xticks(np.arange(0, max(processed_epochs) + 5, 5)) # Ticks every 5 epochs
+        plt.xlabel("Global Epoch"); plt.ylabel("Average MSE Loss"); plt.legend(); plt.grid(True)
+        plt.xticks(np.arange(0, max(processed_epochs) + 5, 5))
         plt.tight_layout()
 
         output_dir = config.TRAINING_PLOTS_DIR
@@ -172,8 +168,6 @@ def main():
             print(f"\nSuccessfully saved validation loss curve to: {final_plot_path}")
         except Exception as e:
             print(f"\nError saving plot: {e}")
-
-        # plt.show()
     else:
         print("Could not generate any validation loss data to plot.")
 

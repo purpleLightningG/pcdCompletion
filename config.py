@@ -16,10 +16,7 @@ MAX_SCANS_TO_PREPROCESS_PER_SEQUENCE = None
 
 # ---- Occlusion Generation Parameters ----
 NUM_OCCLUSIONS_PER_SCAN = 1
-OCCLUSION_MIN_SIZE_METERS = 8
-OCCLUSION_MAX_SIZE_METERS = 25
-OCCLUSION_CENTER_XY_RANGE = 15
-OCCLUSION_CENTER_Z_RANGE = 2
+# ... (other occlusion params as before)
 
 # ---- Model & Data Parameters ----
 NUM_CLASSES = 20
@@ -36,15 +33,25 @@ BETA_END = 0.02
 
 # ---- Full-Scale Training Parameters ----
 NUM_GLOBAL_EPOCHS = 100
-DATALOADER_BATCH_SIZE = 12
-NUM_WORKERS_DATALOADER = 0
-LEARNING_RATE = 1e-5
+DATALOADER_BATCH_SIZE = 8 # Start with a safe batch size
+NUM_WORKERS_DATALOADER = 0 
+LEARNING_RATE = 5e-5       
+CD_LOSS_NUM_POINTS = 8192
 
-# --- Hybrid Loss Weight ---
-# Weight for the Chamfer Distance loss component.
-# Total Loss = L_noise + LAMBDA_CD_LOSS * L_cd
-LAMBDA_CD_LOSS = 1.0 # <--- NEW PARAMETER
-CD_LOSS_NUM_POINTS = 8192 # <--- NEW PARAMETER
+# --- Hybrid Loss Weights ---
+# Total Loss = L_noise + LAMBDA_CD_LOSS * L_cd + LAMBDA_PARAMETRIC_LOSS * L_parametric
+LAMBDA_CD_LOSS = 1.0 
+LAMBDA_PARAMETRIC_LOSS = 0.5 # <--- NEW PARAMETER: Weight for the new parametric loss. 0.5 is a good starting point.
+
+# --- Parametric Head Parameters ---
+# List of semantic class IDs that are considered planar.
+# You need to map this to your specific dataset's labels.
+# Example mapping for SemanticKITTI (common):
+# 40-49: road, sidewalk, parking, other-ground
+# 50-51: building, fence
+# 70: terrain
+# We will use example class IDs here. You must verify these match your label mapping.
+PLANAR_CLASS_IDS = [40, 44, 48, 49, 50, 51, 70] 
 
 CHECKPOINT_DIR = "training_checkpoints"
 SAVE_EVERY_N_EPOCHS = 5
@@ -53,14 +60,14 @@ VALIDATE_EVERY_N_EPOCHS = 1
 # ---- Output Directories ----
 EVALUATION_PCD_OUTPUT_DIR = "evaluation_pcd_outputs"
 TRAINING_PLOTS_DIR = "training_plots"
-MAX_SAMPLES_TO_EVALUATE = 100 # we have a max sample of 4071
+MAX_SAMPLES_TO_EVALUATE = 100  # <--- ADD THIS LINE
 
 # ---- Visualization Control ----
-VISUALIZE_PER_SCAN_DURING_PIPELINE = False
 VISUALIZE_LAST_SCAN_POST_PIPELINE = True
 
 # ---- Device Configuration ----
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 # ---- Path Construction Logic Helper (unchanged) ----
 def get_sequence_paths(base_dir, sequence_id):
@@ -75,7 +82,7 @@ def get_sequence_paths(base_dir, sequence_id):
     return paths
 
 if __name__ == '__main__':
-    # ... (__main__ block as before, can add a print for LAMBDA_CD_LOSS)
-    print("--- Configuration Settings for Full-Scale Training ---")
-    print(f"Hybrid Loss CD Weight (Lambda): {LAMBDA_CD_LOSS}")
+    print("--- Configuration Settings for Full-Scale Training with Parametric Head ---")
+    print(f"Parametric Loss Weight (Lambda): {LAMBDA_PARAMETRIC_LOSS}")
+    print(f"Planar Class IDs: {PLANAR_CLASS_IDS}")
     # ...
