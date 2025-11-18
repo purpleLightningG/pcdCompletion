@@ -38,21 +38,16 @@ pcdCompletion/
 ├── visualization_utils.py           # Visualization helpers
 └── README.md
 
-⭐ Features
+## ⭐ Features
 
 ✅ PyTorch implementation of point cloud / depth completion
-
 ✅ KITTI-style dataset support
-
 ✅ Modular model blocks for easy experimentation
-
 ✅ Training + evaluation scripts
-
 ✅ Visualization tools using Open3D
-
 ✅ Example outputs and training plots included
 
-⚙️ Installation
+## ⚙️ Installation
 git clone https://github.com/purpleLightningG/pcdCompletion.git
 cd pcdCompletion
 
@@ -62,7 +57,7 @@ source .venv/bin/activate   # On Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
 
-📦 Dataset Setup
+## 📦 Dataset Setup
 
 This code assumes a KITTI-style depth completion dataset layout (sparse LiDAR depth + RGB + ground truth).
 
@@ -79,7 +74,7 @@ checkpoint/log directories
 To adapt to a custom dataset, modify:
 kitti_completion_dataset.py
 
-🏋️ Training
+## 🏋️ Training
 
 After configuring paths in config.py, run:
 python train_full_scale.py
@@ -94,7 +89,7 @@ Use training utilities in training_utils.py
 
 Save checkpoints + loss curves
 
-📊 Evaluation
+## 📊 Evaluation
 
 Evaluate a trained checkpoint:
 python evaluate.py --checkpoint path/to/checkpoint.pth
@@ -103,7 +98,7 @@ Plot learning curves:
 python generate_curve_from_checkpoints.py \
   --log-dir path/to/checkpoints
 
-🎯 Inference & Visualization
+## 🎯 Inference & Visualization
 Run the full pipeline:
 python main_pipeline.py \
   --checkpoint path/to/checkpoint.pth \
@@ -120,7 +115,7 @@ python view_comparison.py \
   --completed path/to/completed_scan.pcd
 
 
-🤝 Contributing
+## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!
 
@@ -136,7 +131,7 @@ Impact on existing behaviour
 
 If you’re using this repo to learn depth completion, feel free to open an issue labeled question.
 
-📝 Citation
+## 📝 Citation
 @misc{pcdCompletion,
   author       = {Shahriar Hossain},
   title        = {pcdCompletion: Point Cloud / Depth Completion in PyTorch},
@@ -144,7 +139,7 @@ If you’re using this repo to learn depth completion, feel free to open an issu
   howpublished = {\url{https://github.com/purpleLightningG/pcdCompletion}}
 }
 
-📜 License
+## 📜 License
 
 This project is released under the MIT License
 
