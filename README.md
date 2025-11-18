@@ -86,6 +86,18 @@ pcdCompletion/
 Most other files are **internal helpers**, not meant to be run directly.
 
 ---
+## ⚠️ **Note on performance:**  
+This repository is designed as a **clean, well-structured baseline** for point cloud / depth completion research.  
+It is **not a state-of-the-art method**, nor does it aim to beat current benchmarks.  
+
+Instead, the goal of this project is to provide:
+
+- a **fully functional end-to-end pipeline** for KITTI-style depth completion  
+- **clear, readable code** for students and researchers  
+- an environment where users can **test ideas, visualize results, and modify architectures**  
+- a robust foundation for experimenting with new models or integrating SOTA designs  
+
+If you’re looking for an easy, hackable sandbox to learn depth completion or prototype new ideas, this repo is built exactly for that.
 
 ## ⭐ Features
 
