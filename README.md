@@ -37,3 +37,124 @@ pcdCompletion/
 ├── view_comparison.py               # Side-by-side comparison of input vs completion
 ├── visualization_utils.py           # Shared visualization helpers
 └── README.md
+
+Features
+
+✅ PyTorch implementation of point cloud / depth completion.
+
+✅ KITTI-style dataset support via kitti_completion_dataset.py.
+
+✅ Modular model components in model_components.py.
+
+✅ Training + evaluation scripts with loss tracking.
+
+✅ Visualization utilities using Open3D / matplotlib.
+
+✅ Example outputs and training plots included.
+
+Installation
+git clone https://github.com/purpleLightningG/pcdCompletion.git
+cd pcdCompletion
+
+# (optional, but recommended)
+python -m venv .venv
+source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+
+Dataset
+
+This code assumes a KITTI-style depth completion dataset layout (sparse depth / LiDAR + RGB / ground truth).
+
+Download the dataset (e.g., KITTI depth completion).
+
+Update paths inside config.py to point to:
+
+training split
+
+validation / test split
+
+output / checkpoints directory
+
+To support a different dataset, modify kitti_completion_dataset.py accordingly.
+
+Training
+
+After configuring the dataset paths in config.py:
+
+python train_full_scale.py
+
+
+This will:
+
+Load the dataset defined in kitti_completion_dataset.py
+
+Build the model from model_components.py
+
+Use the utilities in training_utils.py
+
+Save checkpoints and (optionally) training curves.
+
+Evaluation
+
+Evaluate a saved checkpoint:
+
+python evaluate.py --checkpoint path/to/checkpoint.pth
+
+
+Plot curves across checkpoints:
+
+python generate_curve_from_checkpoints.py \
+  --log-dir path/to/logs_or_checkpoints
+
+Inference & Visualization
+
+Run the end-to-end pipeline on a folder of sparse scans:
+
+python main_pipeline.py \
+  --checkpoint path/to/checkpoint.pth \
+  --input-dir path/to/sparse_scans \
+  --output-dir completed_scans_output
+
+
+Visualize a single point cloud:
+
+python view_pcd.py --pcd path/to/your_scan.pcd
+
+
+Compare input vs completed output:
+
+python view_comparison.py \
+  --input path/to/sparse_scan.pcd \
+  --completed path/to/completed_scan.pcd
+
+Contributing
+
+Contributions, issues and feature requests are welcome.
+
+Open an issue if something is unclear or broken.
+
+Fork → create a branch → open a pull request with:
+
+what you changed
+
+how to reproduce it
+
+any impact on existing behaviour.
+
+If you’re using this repo to learn point cloud / depth completion and get stuck, feel free to open an issue labelled question.
+
+Citation
+
+If this repo helps your work, you can cite it as:
+
+@misc{pcdCompletion,
+  author       = {Shahriar Hossain},
+  title        = {pcdCompletion: Point Cloud / Depth Completion in PyTorch},
+  year         = {2025},
+  howpublished = {\url{https://github.com/purpleLightningG/pcdCompletion}}
+}
+
+License
+
+This project is released under the MIT License
