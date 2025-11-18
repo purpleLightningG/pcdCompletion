@@ -38,7 +38,7 @@ pcdCompletion/
 ├── visualization_utils.py           # Visualization helpers
 └── README.md
 
-## ⭐ Features
+##⭐ Features
 
 ✅ PyTorch implementation of point cloud / depth completion
 ✅ KITTI-style dataset support
