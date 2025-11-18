@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Checkpoints, logs, and large generated outputs
+checkpoints/
+runs/
+logs/
+training_plots/
+completed_scans_output/
+
+# Jupyter
+.ipynb_checkpoints/
