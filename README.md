@@ -37,111 +37,139 @@ pcdCompletion/
 ├── view_comparison.py               # Compare sparse vs completed output
 ├── visualization_utils.py           # Visualization helpers
 └── README.md
+```
 
-##⭐ Features
+---
 
-✅ PyTorch implementation of point cloud / depth completion
-✅ KITTI-style dataset support
-✅ Modular model blocks for easy experimentation
-✅ Training + evaluation scripts
-✅ Visualization tools using Open3D
-✅ Example outputs and training plots included
+## ⭐ Features
+
+- ✅ PyTorch implementation of point cloud / depth completion  
+- ✅ KITTI-style dataset support  
+- ✅ Modular model blocks for easy experimentation  
+- ✅ Training + evaluation scripts  
+- ✅ Visualization tools using Open3D  
+- ✅ Example outputs and training plots included  
+
+---
 
 ## ⚙️ Installation
+
+```bash
 git clone https://github.com/purpleLightningG/pcdCompletion.git
 cd pcdCompletion
 
 # (optional virtual environment)
 python -m venv .venv
-source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
+```
+
+---
 
 ## 📦 Dataset Setup
 
-This code assumes a KITTI-style depth completion dataset layout (sparse LiDAR depth + RGB + ground truth).
+This code assumes a **KITTI-style depth completion dataset layout** (sparse LiDAR depth + RGB + ground truth).
 
-Download the dataset (e.g., KITTI depth completion).
+Steps:
 
-Update paths inside config.py:
+1. Download the dataset (e.g., KITTI depth completion).  
+2. Update paths inside `config.py`:  
+   - training split  
+   - validation / test split  
+   - checkpoint/log directories  
+3. To adapt to a custom dataset, modify:
 
-training split
-
-validation / test split
-
-checkpoint/log directories
-
-To adapt to a custom dataset, modify:
+```
 kitti_completion_dataset.py
+```
+
+---
 
 ## 🏋️ Training
 
-After configuring paths in config.py, run:
+```bash
 python train_full_scale.py
+```
 
 This will:
 
-Load dataset
+- Load the dataset  
+- Build the model from `model_components.py`  
+- Use training utilities in `training_utils.py`  
+- Save checkpoints + loss curves  
 
-Build model from model_components.py
-
-Use training utilities in training_utils.py
-
-Save checkpoints + loss curves
+---
 
 ## 📊 Evaluation
 
-Evaluate a trained checkpoint:
+```bash
 python evaluate.py --checkpoint path/to/checkpoint.pth
+```
 
 Plot learning curves:
+
+```bash
 python generate_curve_from_checkpoints.py \
   --log-dir path/to/checkpoints
+```
+
+---
 
 ## 🎯 Inference & Visualization
-Run the full pipeline:
+
+### Run the full pipeline:
+
+```bash
 python main_pipeline.py \
   --checkpoint path/to/checkpoint.pth \
   --input-dir path/to/sparse_scans \
   --output-dir completed_scans_output
+```
 
+### Visualize a completed scan:
 
-Visualize a completed scan:
+```bash
 python view_pcd.py --pcd path/to/scan.pcd
+```
 
-Compare sparse vs completed:
+### Compare sparse vs completed:
+
+```bash
 python view_comparison.py \
   --input path/to/sparse_scan.pcd \
   --completed path/to/completed_scan.pcd
+```
 
+---
 
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!
 
-Open an issue for bugs, clarifications, or feature requests.
+- Open an issue for bugs, clarifications, or feature requests.  
+- Fork → create a branch → open a pull request with:  
+  - what you changed  
+  - how to reproduce  
+  - impact on existing behaviour  
 
-Fork → create a branch → open a pull request with:
+If you’re using this repo to learn depth completion, feel free to open an issue labeled `question`.
 
-What you changed
-
-How to reproduce
-
-Impact on existing behaviour
-
-If you’re using this repo to learn depth completion, feel free to open an issue labeled question.
+---
 
 ## 📝 Citation
+
+```text
 @misc{pcdCompletion,
   author       = {Shahriar Hossain},
   title        = {pcdCompletion: Point Cloud / Depth Completion in PyTorch},
   year         = {2025},
   howpublished = {\url{https://github.com/purpleLightningG/pcdCompletion}}
 }
+```
+
+---
 
 ## 📜 License
 
-This project is released under the MIT License
-
-
-
+This project is released under the MIT License.
