@@ -16,6 +16,36 @@ This repo is aimed at:
 
 ---
 
+## 🚀 TL;DR Quickstart
+
+If you just want to **see it run**:
+
+```bash
+# 1) Clone and install
+git clone https://github.com/purpleLightningG/pcdCompletion.git
+cd pcdCompletion
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2) Update dataset paths in config.py
+
+# 3) Run inference
+python main_pipeline.py \
+  --checkpoint path/to/checkpoint.pth \
+  --input-dir path/to/sparse_scans \
+  --output-dir completed_scans_output
+```
+
+**Most users will mainly use:**
+
+- `config.py`  
+- `train_full_scale.py`  
+- `main_pipeline.py`  
+- `view_pcd.py` / `view_comparison.py`  
+
+---
+
 ## 📁 Repository Structure
 
 ```text
@@ -34,10 +64,26 @@ pcdCompletion/
 ├── main_pipeline.py                 # End-to-end pipeline
 ├── preprocess_dataset.py            # Dataset preprocessing
 ├── view_pcd.py                      # Visualize point clouds
-├── view_comparison.py               # Compare sparse vs completed output
+├── view_comparison.py               # Compare sparse vs completed
 ├── visualization_utils.py           # Visualization helpers
 └── README.md
 ```
+
+---
+
+## 🧭 Which script should I use?
+
+| Goal                            | Script(s) to run                    | Notes |
+|---------------------------------|-------------------------------------|-------|
+| 🔧 Configure dataset & paths    | `config.py`                         | Set dataset root, splits, output dirs |
+| 🏋️ Train a model               | `train_full_scale.py`               | Main training entrypoint |
+| 📊 Evaluate a checkpoint        | `evaluate.py`                       | Computes validation/test metrics |
+| 📉 Plot training curves         | `generate_curve_from_checkpoints.py`| Reads logs & checkpoints |
+| 🎯 Full inference pipeline      | `main_pipeline.py`                  | Run completion on a folder |
+| 👀 View point cloud             | `view_pcd.py`                       | Visualizes `.pcd` files |
+| 🔍 Compare sparse vs completed  | `view_comparison.py`                | Side-by-side comparison |
+
+Most other files are **internal helpers**, not meant to be run directly.
 
 ---
 
