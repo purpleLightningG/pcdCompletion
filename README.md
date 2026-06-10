@@ -34,18 +34,18 @@ pip install -r requirements.txt
 # 2) Update dataset paths in config.py
 
 # 3) Run inference
-python main_pipeline.py \
+python scripts/main_pipeline.py \
   --checkpoint path/to/checkpoint.pth \
   --input-dir path/to/sparse_scans \
-  --output-dir completed_scans_output
+  --output-dir outputs/completed_scans
 ```
 
 **Most users will mainly use:**
 
-- `config.py`  
-- `train_full_scale.py`  
-- `main_pipeline.py`  
-- `view_pcd.py` / `view_comparison.py`  
+- `config.py`
+- `scripts/train_full_scale.py`
+- `scripts/main_pipeline.py`
+- `scripts/view_pcd.py` / `scripts/view_comparison.py` 
 
 ---
 
@@ -53,22 +53,25 @@ python main_pipeline.py \
 
 ```text
 pcdCompletion/
-├── completed_scans_output/          # Example outputs
-├── training_plots/                  # Training curves
-├── config.py                        # Central configuration
-├── data_utils.py                    # Data loading / formatting utilities
-├── kitti_completion_dataset.py      # KITTI-style dataset class
-├── model_components.py              # Model building blocks
-├── training_utils.py                # Training loop utilities
-├── train_full_scale.py              # Main training script
-├── evaluate.py                      # Evaluation script
-├── generate_curve_from_checkpoints.py  # Plot loss curves
-├── inference_utils.py               # Inference helpers
-├── main_pipeline.py                 # End-to-end pipeline
-├── preprocess_dataset.py            # Dataset preprocessing
-├── view_pcd.py                      # Visualize point clouds
-├── view_comparison.py               # Compare sparse vs completed
-├── visualization_utils.py           # Visualization helpers
+├── src/                                     # Core library modules
+│   ├── model_components.py                  # ContextEncoder, DenoisingNetwork, DiffusionScheduler
+│   ├── data_utils.py                        # Data loading, occlusion simulation, RANSAC plane fit
+│   ├── kitti_completion_dataset.py          # PyTorch Dataset wrapper
+│   ├── training_utils.py                    # Training loop utilities
+│   └── inference_utils.py                   # Sampling / inference helpers
+├── scripts/                                 # Runnable entry points
+│   ├── train_full_scale.py                  # Main training script
+│   ├── evaluate.py                          # Evaluation script
+│   ├── preprocess_dataset.py                # Dataset preprocessing
+│   ├── main_pipeline.py                     # End-to-end inference pipeline
+│   ├── view_pcd.py                          # Visualize point clouds
+│   ├── view_comparison.py                   # Compare sparse vs completed
+│   └── generate_curve_from_checkpoints.py   # Plot training curves
+├── assets/                                  # Architecture diagram, demo media
+├── outputs/                                 # Completed scans, training plots
+├── config.py                                # All hyperparameters (edit this first)
+├── requirements.txt
+├── LICENSE
 └── README.md
 ```
 
@@ -76,17 +79,17 @@ pcdCompletion/
 
 ## 🧭 Which script should I use?
 
-| Goal                            | Script(s) to run                    | Notes |
-|---------------------------------|-------------------------------------|-------|
-| 🔧 Configure dataset & paths    | `config.py`                         | Set dataset root, splits, output dirs |
-| 🏋️ Train a model               | `train_full_scale.py`               | Main training entrypoint |
-| 📊 Evaluate a checkpoint        | `evaluate.py`                       | Computes validation/test metrics |
-| 📉 Plot training curves         | `generate_curve_from_checkpoints.py`| Reads logs & checkpoints |
-| 🎯 Full inference pipeline      | `main_pipeline.py`                  | Run completion on a folder |
-| 👀 View point cloud             | `view_pcd.py`                       | Visualizes `.pcd` files |
-| 🔍 Compare sparse vs completed  | `view_comparison.py`                | Side-by-side comparison |
+| Goal | Script | Notes |
+|---|---|---|
+| 🔧 Configure dataset & paths | `config.py` | Set dataset root, splits, output dirs |
+| 🏋️ Train a model | `scripts/train_full_scale.py` | Main training entrypoint |
+| 📊 Evaluate a checkpoint | `scripts/evaluate.py` | Computes validation/test metrics |
+| 📉 Plot training curves | `scripts/generate_curve_from_checkpoints.py` | Reads logs & checkpoints |
+| 🎯 Full inference pipeline | `scripts/main_pipeline.py` | Run completion on a folder |
+| 👀 View point cloud | `scripts/view_pcd.py` | Visualizes `.pcd` files |
+| 🔍 Compare sparse vs completed | `scripts/view_comparison.py` | Side-by-side comparison |
 
-Most other files are **internal helpers**, not meant to be run directly.
+All core model and data logic lives in `src/` and is not meant to be run directly.
 
 ---
 ## ⚠️ **Note on performance:**  
@@ -150,31 +153,31 @@ kitti_completion_dataset.py
 ## 🏋️ Training
 
 ```bash
-python train_full_scale.py
+python scripts/train_full_scale.py
 ```
 
 This will:
 
-- Load the dataset  
-- Build the model from `model_components.py`  
-- Use training utilities in `training_utils.py`  
-- Save checkpoints + loss curves  
+- Load the dataset via `src/kitti_completion_dataset.py`
+- Build the model from `src/model_components.py`
+- Use training utilities in `src/training_utils.py`
+- Optimize a hybrid loss: L_noise + L_CD (Chamfer) + L_parametric (planar classes)
+- Save checkpoints and loss curves to `outputs/`
 
 ---
 
 ## 📊 Evaluation
 
 ```bash
-python evaluate.py --checkpoint path/to/checkpoint.pth
+python scripts/evaluate.py --checkpoint outputs/checkpoints/latest_checkpoint.pth.tar
 ```
 
 Plot learning curves:
 
 ```bash
-python generate_curve_from_checkpoints.py \
-  --log-dir path/to/checkpoints
+python scripts/generate_curve_from_checkpoints.py \
+  --log-dir outputs/checkpoints
 ```
-
 ---
 
 ## 🎯 Inference & Visualization
@@ -182,10 +185,10 @@ python generate_curve_from_checkpoints.py \
 ### Run the full pipeline:
 
 ```bash
-python main_pipeline.py \
-  --checkpoint path/to/checkpoint.pth \
+python scripts/main_pipeline.py \
+  --checkpoint outputs/checkpoints/latest_checkpoint.pth.tar \
   --input-dir path/to/sparse_scans \
-  --output-dir completed_scans_output
+  --output-dir outputs/completed_scans
 ```
 
 ### Visualize a completed scan:
@@ -201,7 +204,6 @@ python view_comparison.py \
   --input path/to/sparse_scan.pcd \
   --completed path/to/completed_scan.pcd
 ```
-
 ---
 
 ## 🤝 Contributing
