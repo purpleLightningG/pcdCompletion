@@ -1,13 +1,14 @@
 # preprocess_dataset.py
 
-import os
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import torch
 import numpy as np
 from tqdm import tqdm
 
 try:
     import config
-    from data_utils import get_scan_paths, preprocess_scan
+    from src.data_utils import get_scan_paths, preprocess_scan
 except ImportError as e:
     print(f"CRITICAL Error importing necessary modules: {e}")
     exit()
