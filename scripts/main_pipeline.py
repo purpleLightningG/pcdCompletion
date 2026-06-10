@@ -2,17 +2,18 @@
 
 import torch
 import numpy as np
-import os
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import open3d as o3d # For saving point clouds
 import matplotlib.pyplot as plt # For the final loss plot
 
 try:
     import config
-    from data_utils import get_scan_paths, preprocess_scan
-    from model_components import ContextEncoder, DenoisingNetwork, DiffusionScheduler
-    from training_utils import run_training_for_scan
-    from inference_utils import sample_completion
-    from visualization_utils import visualize_scan_completion
+    from src.data_utils import get_scan_paths, preprocess_scan
+    from src.model_components import ContextEncoder, DenoisingNetwork, DiffusionScheduler
+    from src.training_utils import run_training_for_scan
+    from src.inference_utils import sample_completion
+    from src.visualization_utils import visualize_scan_completion
 except ImportError as e:
     print(f"CRITICAL Error importing necessary modules: {e}")
     exit()
