@@ -1,6 +1,7 @@
 # view_comparison.py
 import open3d as o3d
-import os
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import argparse
 import numpy as np
 
