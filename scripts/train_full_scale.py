@@ -3,15 +3,16 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import os
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 try:
     import config
-    from model_components import ContextEncoder, DenoisingNetwork, DiffusionScheduler
-    from kitti_completion_dataset import KittiCompletionDataset
+    from src.model_components import ContextEncoder, DenoisingNetwork, DiffusionScheduler
+    from src.kitti_completion_dataset import KittiCompletionDataset
 except ImportError as e:
     print(f"CRITICAL Error importing necessary modules: {e}")
     exit()
