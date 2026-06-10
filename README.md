@@ -15,6 +15,9 @@ This repo is aimed at:
 - 🚗 **CV / AV engineers** working with KITTI-style 3D data.
 
 ---
+<p align="center">
+  <img src="assets/pcdCompletion.png" alt="Pipeline architecture" width="700"/>
+</p>
 
 ## 🚀 TL;DR Quickstart
 
