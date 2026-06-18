@@ -19,6 +19,14 @@ This repo is aimed at:
   <img src="assets/pcdCompletion.png" alt="Pipeline architecture" width="700"/>
 </p>
 
+<p align="center">
+  <img src="assets/demo.gif" alt="SemanticKITTI input scan" width="800"/>
+</p>
+
+<p align="center">
+  <i>Example SemanticKITTI scan (1.2M points) colored by semantic class — the input modality this diffusion completion model operates on.</i>
+</p>
+
 ## 🚀 TL;DR Quickstart
 
 If you just want to **see it run**:
